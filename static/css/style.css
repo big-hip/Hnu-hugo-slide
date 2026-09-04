@@ -130,10 +130,10 @@ body.xtu-site.xtu-index-page {
 
 .xtu-brand-cn {
   display: block;
-  height: 38px;
+  height: 42px;
   width: auto;
   max-width: none;
-  aspect-ratio: 167 / 47;
+  aspect-ratio: 127 / 47;
   object-fit: contain;
 }
 
