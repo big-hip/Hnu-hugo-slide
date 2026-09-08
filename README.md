@@ -168,7 +168,7 @@ export OPENROUTER_API_KEY="你的 OpenRouter API Key"
 
 ---
 
-## 4. 当前仓库里有哪些 skill
+## 4. 当前项目可用的 skill
 
 当前本地 skills 在：
 
@@ -178,7 +178,42 @@ export OPENROUTER_API_KEY="你的 OpenRouter API Key"
 
 目前有这些：
 
-### 4.1 `xtu-hugo-slide`
+### 4.1 `hnu-hugo-slide`（Codex 项目 skill）
+
+这个项目工作流 skill 已安装到当前用户的 Codex skill 目录：
+
+```text
+/user/tangchengxiang/.codex/skills/hnu-hugo-slide/SKILL.md
+```
+
+调用示例：
+
+```text
+使用 $hnu-hugo-slide，把这份 Markdown 制作成一套新的 5 页汇报。
+```
+
+它会继续使用本项目的 `.tools/activate.sh`、`content/` 目录、Hugo 模板和 npm 命令，不会改变现有项目的运行方式。
+
+如果使用命令行 OpenCode，同一个 skill 也已经通过用户级配置注册。配置文件为：
+
+```text
+/user/tangchengxiang/.config/opencode/opencode.jsonc
+```
+
+进入项目后启动即可：
+
+```bash
+cd /user/tangchengxiang/workspace/ResearchPaper/Hnu-hugo-slide
+opencode
+```
+
+在 OpenCode 中可直接说明：
+
+```text
+使用 hnu-hugo-slide，把这份 Markdown 制作成一套新的 5 页汇报。
+```
+
+OpenCode 使用的是 `/user/tangchengxiang/.codex/skills/hnu-hugo-slide` 的同一份文件，不会产生第二份副本。
 
 用途：
 
