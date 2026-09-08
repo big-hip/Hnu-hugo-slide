@@ -206,10 +206,41 @@
         fitRoot.dataset.xtuInit = '1';
         initSlideContent(fitRoot);
       }
+      fitSlideContent(fitRoot);
       if (typeof window._renderSlideMath === 'function') {
         window._renderSlideMath(target);
       }
+      fitSlideContent(fitRoot);
     }
+  }
+
+  function fitSlideContent(fitRoot) {
+    if (!fitRoot) return;
+    var container = fitRoot.closest('.xtu-slide-container');
+    var footer = container ? container.querySelector('.xtu-footer') : null;
+    var card = fitRoot.closest('.xtu-slide-card');
+    if (!footer || !card) return;
+
+    var apply = function () {
+      fitRoot.style.transformOrigin = 'top center';
+      fitRoot.style.transform = '';
+      var natural = fitRoot.getBoundingClientRect();
+      var cardRect = card.getBoundingClientRect();
+      var footerTop = footer.getBoundingClientRect().top;
+      var scale = Math.min(
+        1,
+        (footerTop - natural.top - 16) / Math.max(1, natural.height),
+        (cardRect.width - 8) / Math.max(1, natural.width)
+      );
+      fitRoot.style.transform = scale < 1 ? 'scale(' + scale + ')' : '';
+    };
+
+    apply();
+    Array.prototype.forEach.call(fitRoot.querySelectorAll('img'), function (img) {
+      if (!img.complete) {
+        img.addEventListener('load', apply, { once: true });
+      }
+    });
   }
 
   function initSlideContent(fitRoot) {
@@ -431,6 +462,12 @@
 
   window.XtuSlideShow = showSlide;
   window.XtuSlideTotal = totalSlides;
+  window._fitSlideContent = fitSlideContent;
+
+  window.addEventListener('resize', function () {
+    var active = document.querySelector('.xtu-slide-container.is-active .xtu-md-root');
+    if (active && typeof fitSlideContent === 'function') fitSlideContent(active);
+  });
 
   // Jump to slide from URL hash on page load
   if (initialSlide !== 0) {
