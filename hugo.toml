@@ -3,7 +3,7 @@ baseURL = "http://localhost:1313/"
 # 生成相对路径，便于直接打开 public 下的 HTML 文件
 relativeURLs = true
 # 站点语言
-languageCode = "zh-CN"
+locale = "zh-CN"
 # 站点时区
 timeZone = "Asia/Shanghai"
 # 站点标题
