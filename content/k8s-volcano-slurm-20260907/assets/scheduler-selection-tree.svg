@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg5"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#eaf2fb"/></linearGradient>
+    <marker id="arr5" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#607f9d"/></marker>
+    <filter id="sh5"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#173b63" flood-opacity=".12"/></filter>
+    <style>.t{font-family:'Noto Sans CJK SC','Microsoft YaHei',sans-serif;fill:#173b63}.title{font-size:42px;font-weight:700}.sub{font-size:22px;fill:#617b96}.h{font-size:25px;font-weight:700}.b{font-size:19px}.arr{stroke:#607f9d;stroke-width:4;fill:none;marker-end:url(#arr5)}.yes{font-size:18px;font-weight:700;fill:#267454}.no{font-size:18px;font-weight:700;fill:#a7532b}</style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg5)"/>
+  <text x="70" y="72" class="t title">调度方案选型：先看工作负载，再看调度深度</text>
+  <text x="70" y="110" class="t sub">针对当前 3 节点规模，优先控制复杂度与迁移成本</text>
+
+  <rect x="600" y="150" width="400" height="80" rx="40" fill="#0e4e96" filter="url(#sh5)"/>
+  <text x="800" y="200" text-anchor="middle" fill="#fff" font-size="28" font-weight="700" font-family="sans-serif">这是什么工作负载？</text>
+
+  <path d="M700 230V285H290V335" class="arr"/><path d="M800 230V335" class="arr"/><path d="M900 230V285H1310V335" class="arr"/>
+
+  <rect x="100" y="335" width="380" height="105" rx="22" fill="#fff2eb" stroke="#dd8452" stroke-width="3" filter="url(#sh5)"/>
+  <text x="290" y="378" text-anchor="middle" class="t h">传统 HPC / MPI</text>
+  <text x="290" y="412" text-anchor="middle" class="t b">依赖 sacct、Reservation、srun</text>
+
+  <rect x="610" y="335" width="380" height="105" rx="22" fill="#eef7ff" stroke="#4f8ed0" stroke-width="3" filter="url(#sh5)"/>
+  <text x="800" y="378" text-anchor="middle" class="t h">AI 训练 / 批作业</text>
+  <text x="800" y="412" text-anchor="middle" class="t b">torchrun · Megatron · DeepSpeed</text>
+
+  <rect x="1120" y="335" width="380" height="105" rx="22" fill="#edf9f3" stroke="#41a071" stroke-width="3" filter="url(#sh5)"/>
+  <text x="1310" y="378" text-anchor="middle" class="t h">在线推理 / 服务</text>
+  <text x="1310" y="412" text-anchor="middle" class="t b">vLLM · SGLang · AIBrix</text>
+
+  <path d="M290 440V535" class="arr"/><path d="M1310 440V535" class="arr"/><path d="M800 440V500" class="arr"/>
+  <rect x="105" y="535" width="370" height="145" rx="22" fill="#dd8452" filter="url(#sh5)"/>
+  <text x="290" y="584" text-anchor="middle" fill="#fff" font-size="28" font-weight="700" font-family="sans-serif">保留 Slurm / Slinky</text>
+  <text x="290" y="622" text-anchor="middle" fill="#fff" font-size="19" font-family="sans-serif">成熟 HPC 语义不可轻易替代</text>
+  <text x="290" y="652" text-anchor="middle" fill="#fff" font-size="19" font-family="sans-serif">与 AI 资源池划清边界</text>
+
+  <rect x="610" y="500" width="380" height="110" rx="55" fill="#fff" stroke="#0e4e96" stroke-width="3"/>
+  <text x="800" y="545" text-anchor="middle" class="t h">需要 NUMA / GPU 拓扑 / MIG</text>
+  <text x="800" y="580" text-anchor="middle" class="t b">或更强放置控制？</text>
+  <path d="M700 610V690H570V735" class="arr"/><path d="M900 610V690H1030V735" class="arr"/>
+  <text x="625" y="672" class="no">否</text><text x="965" y="672" class="yes">是</text>
+
+  <rect x="390" y="735" width="360" height="115" rx="22" fill="#4f8ed0" filter="url(#sh5)"/>
+  <text x="570" y="782" text-anchor="middle" fill="#fff" font-size="27" font-weight="700" font-family="sans-serif">Kueue + JobSet</text>
+  <text x="570" y="818" text-anchor="middle" fill="#fff" font-size="18" font-family="sans-serif">当前规模默认推荐：轻量、标准 API</text>
+
+  <rect x="850" y="735" width="360" height="115" rx="22" fill="#41a071" filter="url(#sh5)"/>
+  <text x="1030" y="782" text-anchor="middle" fill="#fff" font-size="27" font-weight="700" font-family="sans-serif">Volcano / KAI</text>
+  <text x="1030" y="818" text-anchor="middle" fill="#fff" font-size="18" font-family="sans-serif">高阶调度需求明确后再引入</text>
+
+  <rect x="1125" y="535" width="370" height="145" rx="22" fill="#0e4e96" filter="url(#sh5)"/>
+  <text x="1310" y="584" text-anchor="middle" fill="#fff" font-size="28" font-weight="700" font-family="sans-serif">标准 Deployment</text>
+  <text x="1310" y="622" text-anchor="middle" fill="#fff" font-size="19" font-family="sans-serif">Service / HPA / Ingress 保持原生</text>
+  <text x="1310" y="652" text-anchor="middle" fill="#fff" font-size="19" font-family="sans-serif">必要时选择 secondary scheduler</text>
+
+  <text x="800" y="890" text-anchor="middle" class="t b">落地策略：小步验证 1–2 个代表性任务，再依据利用率与运维成本决定扩大范围</text>
+</svg>

@@ -1,0 +1,44 @@
+封面
+今天汇报的是当前 Kubernetes、Volcano 与 Slurm 调度体系的调研结果。重点不是单独介绍三个项目，而是回答三个问题：现有双调度体系的矛盾在哪里，哪些负载应该迁移，以及对当前三节点 A100 集群最合适的落地顺序是什么。
+
+第 1 页｜先看结论：按工作负载分工，而非“一刀切”替代
+先给结论。在线推理继续使用 Kubernetes Deployment；当前规模的 AI 批训练优先试点 Kueue 加 JobSet；只有出现 GPU 拓扑、NUMA、MIG 等深度调度需求时，再引入 Volcano 或 NVIDIA KAI。传统 HPC、MPI、sacct 记账和预约类任务继续保留 Slurm。我们的目标是按工作负载分工，不是用一个系统强行替代所有系统。
+
+第 2 页｜当前基础设施：同一底座上的两套调度账本
+当前集群包括一个控制面节点和两个 GPU worker，每个 GPU worker 有四张 A100。Kubernetes 承担推理，Slinky 在 Kubernetes 内运行一套 Slurm 来承担训练。虽然它们共享同一组物理节点，但逻辑上是两套资源账本。训练卡和推理卡静态划分，忙闲不能互借，同时还要维护常驻 Slurm worker Pod。这是本次选型真正要解决的问题。
+
+第 3 页｜三类调度体系的本质差异
+三者的根本区别是调度单元。默认 kube-scheduler 面向单个 Pod；Slurm 面向完整 HPC Job 和节点资源；Volcano 仍在 Kubernetes 内，但把 PodGroup 或 vcjob 作为批任务整体来处理。因此，不能只根据某个功能是否存在来判断谁替代谁，还要看工作负载本身属于服务、AI 批作业还是传统 HPC。
+
+第 4 页｜Kubernetes：云原生底座，但默认只调度单个 Pod
+Kubernetes 的优势是容器、网络、服务发现、弹性伸缩和声明式运维。默认调度器逐个 Pod 匹配资源，这对在线服务很合适，但对多机训练存在不足。四个 worker 如果只有两个被调度，已启动的 worker 会占着资源等待另外两个，容易形成死锁。所以训练需要额外的 Gang Scheduling、队列和公平调度语义。
+
+第 5 页｜Slurm + Slinky：成熟 HPC 能力，代价是中间常驻层
+Slinky 通过 Operator 在 Kubernetes 中部署 Slurm 控制器、登录节点、REST API 和 worker。用户先进入 Login Pod，再用 sbatch 提交任务，任务最终在常驻 worker Pod 内通过 Apptainer 运行。它保留了 Slurm 成熟的队列、回填、记账和 MPI 生态，但同时形成中间常驻层和第二套资源账本，这是资源共享受限的原因。
+
+第 6 页｜Volcano：为 Kubernetes 补齐批作业调度能力
+Volcano 的定位不是通用容器平台，而是补齐 Kubernetes 的批作业能力。它提供 PodGroup、Queue 和 VolcanoJob，支持集合调度、队列配额、优先级、抢占和更深的放置策略。训练任务本身直接作为 Pod 运行，不再先进入一个常驻 Slurm worker，因此训练和推理有机会共享同一套 Kubernetes GPU 资源。
+
+第 7 页｜从“常驻 Slurm 层”转为“任务 Pod 直接占卡”
+迁移后的提交链路会明显缩短：用户或流水线直接向 Kubernetes API 提交 Job 或 PodGroup，调度器创建训练 Pod 并直接占用 GPU。代价是原来的 Slurm 脚本和 Apptainer 镜像需要改造成 Kubernetes YAML 和 OCI 镜像；sacct 记账也需要由 Prometheus、成本系统或作业元数据补齐。因此这是工作负载迁移，不只是更换调度器二进制。
+
+第 8 页｜GPU 不足时：默认等待，不是立即失败
+对于设置了 minAvailable 的训练任务，资源不够时整个任务处于 Inqueue，不会部分启动；资源满足后整组运行。Deployment 扩容时，新副本只会 Pending，已有副本继续服务。默认语义是等待，而不是立即失败。若业务需要等待上限，可以通过 activeDeadlineSeconds、优先级、抢占和 Job Policy 明确控制。
+
+第 9 页｜Volcano 能覆盖 AI 训练，但不能照搬全部 Slurm 能力
+Volcano 在 Gang、队列和抢占方面足以覆盖大部分 AI 训练需求，但 Slurm 的 sacct、Reservation、Job Array、Job Step 和 srun 生态并不会自动出现。传统 MPI 还需要 MPI Operator 等附加组件。这里的判断原则是：容器化 AI 训练可以迁，依赖 Slurm 深层语义的传统 HPC 不强迁。
+
+第 10 页｜Kueue + JobSet：当前三节点集群的默认推荐
+Kueue 并不替换 kube-scheduler，它负责作业何时准入以及占用哪个队列的配额；JobSet 负责编排一组关联 Job。这个组合保持标准 Kubernetes API，概念和运维负担更小，对当前 TP2、DP 等浅层训练语义已经足够。将来如果出现高级硬件放置需求，还可以让 Kueue 管队列、Volcano 或 KAI 管实际放置。
+
+第 11 页｜推荐目标形态：一套 GPU 池，按负载选择入口
+目标不是所有任务走一个 API，而是共享一套可治理的 GPU 池。在线服务仍用 Deployment，AI 批作业通过 Kueue 加 JobSet 或 Volcano 进入，传统 HPC 保留 Slurm。短期不拆 Slinky，以代表性任务试点；中期建立 Queue 和优先级，让训练与推理弹性借用；长期再按照负载实际依赖收敛 Slurm 边界。
+
+第 12 页｜四阶段实施：从可回退试点到按负载收敛
+实施分四步。先采集现状基线；再最小化部署 Kueue 和 JobSet，验证控制面和卸载回退；随后迁移一个代表性训练任务，同时保持 vLLM Serving；最后压测资源竞争、抢占和故障恢复。每一步都有退出条件，避免在还没有收益数据时进行大规模改造。
+
+第 13 页｜验收指标：用数据决定是否继续迁移
+验收不能只看任务是否跑通。资源侧要看 GPU 利用率和碎片率；调度侧看排队时间和 Gang 成功率；训练侧看吞吐和 NCCL；服务侧看推理 SLO；运维侧看常驻 Pod、恢复时间和变更复杂度。只有共享池收益被数据证明后，才值得进一步增加 Volcano 或 KAI 的复杂度。
+
+第 14 页｜最终建议
+最后总结：当前优先试点 Kueue 加 JobSet；Volcano 作为深度调度的按需升级选项；推理保持 Kubernetes 原生；传统 HPC 保留 Slurm。先迁移一到两个代表作业，以资源效率、排队、吞吐、稳定性和运维成本做判断。最终目标是建立可共享、可观测、可回退的 GPU 资源治理体系。

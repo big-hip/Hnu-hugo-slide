@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#eaf2fb"/></linearGradient>
+    <filter id="sh2"><feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#173b63" flood-opacity=".12"/></filter>
+    <style>.t{font-family:'Noto Sans CJK SC','Microsoft YaHei',sans-serif;fill:#173b63}.title{font-size:42px;font-weight:700}.sub{font-size:22px;fill:#617b96}.h{font-size:30px;font-weight:700}.b{font-size:21px}.small{font-size:18px}.pill{font-size:18px;font-weight:700}.line{stroke:#8aa9c6;stroke-width:3}</style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg2)"/>
+  <text x="70" y="72" class="t title">三类调度体系：调度单元决定能力边界</text>
+  <text x="70" y="110" class="t sub">不是简单的“谁覆盖谁”，而是容器编排、HPC 作业与 Kubernetes 批调度的不同抽象</text>
+
+  <g filter="url(#sh2)">
+    <rect x="65" y="150" width="450" height="660" rx="26" fill="#fff" stroke="#4f8ed0" stroke-width="3"/>
+    <rect x="575" y="150" width="450" height="660" rx="26" fill="#fff" stroke="#dd8452" stroke-width="3"/>
+    <rect x="1085" y="150" width="450" height="660" rx="26" fill="#fff" stroke="#41a071" stroke-width="3"/>
+  </g>
+
+  <circle cx="290" cy="220" r="42" fill="#326ce5"/><text x="290" y="231" text-anchor="middle" font-size="30" font-weight="700" fill="#fff">K8s</text>
+  <text x="290" y="292" text-anchor="middle" class="t h">kube-scheduler</text>
+  <rect x="110" y="325" width="360" height="62" rx="16" fill="#eaf3ff"/><text x="290" y="364" text-anchor="middle" class="t b">调度单元：单个 Pod</text>
+  <line x1="290" y1="388" x2="290" y2="430" class="line"/>
+  <rect x="110" y="430" width="360" height="105" rx="16" fill="#f4f8fc"/>
+  <text x="135" y="468" class="t b">✓ Deployment / Service 原生</text><text x="135" y="505" class="t b">✓ 弹性伸缩与云原生生态</text>
+  <rect x="110" y="560" width="360" height="125" rx="16" fill="#fff0f0"/>
+  <text x="135" y="598" class="t b">△ 无原生队列 / Gang</text><text x="135" y="635" class="t b">△ GPU 只感知数量</text><text x="135" y="672" class="t b">△ 分布式训练可能部分启动</text>
+  <rect x="145" y="725" width="290" height="42" rx="21" fill="#326ce5"/><text x="290" y="753" text-anchor="middle" fill="#fff" class="pill">最适合：在线服务</text>
+
+  <circle cx="800" cy="220" r="42" fill="#dd8452"/><text x="800" y="231" text-anchor="middle" font-size="25" font-weight="700" fill="#fff">HPC</text>
+  <text x="800" y="292" text-anchor="middle" class="t h">Slurm</text>
+  <rect x="620" y="325" width="360" height="62" rx="16" fill="#fff1e8"/><text x="800" y="364" text-anchor="middle" class="t b">调度单元：Job / Node / GRES</text>
+  <line x1="800" y1="388" x2="800" y2="430" class="line"/>
+  <rect x="620" y="430" width="360" height="125" rx="16" fill="#f4f8fc"/>
+  <text x="645" y="468" class="t b">✓ Partition / QOS / Fairshare</text><text x="645" y="505" class="t b">✓ Backfill / Reservation / sacct</text><text x="645" y="542" class="t b">✓ MPI 与拓扑绑定成熟</text>
+  <rect x="620" y="580" width="360" height="105" rx="16" fill="#fff0f0"/>
+  <text x="645" y="618" class="t b">△ 不理解 Service / Deployment</text><text x="645" y="655" class="t b">△ 容器需额外运行层</text>
+  <rect x="655" y="725" width="290" height="42" rx="21" fill="#dd8452"/><text x="800" y="753" text-anchor="middle" fill="#fff" class="pill">最适合：传统 HPC</text>
+
+  <circle cx="1310" cy="220" r="42" fill="#41a071"/><text x="1310" y="231" text-anchor="middle" font-size="26" font-weight="700" fill="#fff">VC</text>
+  <text x="1310" y="292" text-anchor="middle" class="t h">Volcano</text>
+  <rect x="1130" y="325" width="360" height="62" rx="16" fill="#e7f7ef"/><text x="1310" y="364" text-anchor="middle" class="t b">调度单元：PodGroup / vcjob</text>
+  <line x1="1310" y1="388" x2="1310" y2="430" class="line"/>
+  <rect x="1130" y="430" width="360" height="125" rx="16" fill="#f4f8fc"/>
+  <text x="1155" y="468" class="t b">✓ Gang / Queue / 抢占</text><text x="1155" y="505" class="t b">✓ Binpack / NUMA / GPU 插件</text><text x="1155" y="542" class="t b">✓ 作业直接运行成 Pod</text>
+  <rect x="1130" y="580" width="360" height="105" rx="16" fill="#fff8e6"/>
+  <text x="1155" y="618" class="t b">△ HPC 记账与预约较弱</text><text x="1155" y="655" class="t b">△ 自有 CRD 带来迁移成本</text>
+  <rect x="1165" y="725" width="290" height="42" rx="21" fill="#41a071"/><text x="1310" y="753" text-anchor="middle" fill="#fff" class="pill">最适合：AI 批训练</text>
+
+  <text x="800" y="860" text-anchor="middle" class="t h">关键判断：工作负载语义优先，而不是追求单一调度器覆盖所有场景</text>
+</svg>
