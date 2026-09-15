@@ -17,7 +17,7 @@ test('parseArgs requires a deck name and derives a default output path', () => {
   const result = parseArgs(['--deck', 'energyKG-2026-03-20']);
 
   assert.equal(result.deck, 'energyKG-2026-03-20');
-  assert.equal(result.output, path.join('output', 'energyKG-2026-03-20.pdf'));
+  assert.equal(result.output, path.join('output', 'pdf', 'energyKG-2026-03-20.pdf'));
 });
 
 test('parseArgs throws when deck is missing', () => {

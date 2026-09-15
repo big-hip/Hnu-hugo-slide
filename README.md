@@ -435,7 +435,7 @@ npm run export-pdf -- --deck group-meeting-2026-03-25
 输出默认在：
 
 ```text
-output/group-meeting-2026-03-25.pdf
+output/pdf/group-meeting-2026-03-25.pdf
 ```
 
 ---

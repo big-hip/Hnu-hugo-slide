@@ -38,7 +38,7 @@ function parseArgs(argv) {
 
   return {
     deck,
-    output: output || path.join('output', `${deck}.pdf`),
+    output: output || path.join('output', 'pdf', `${deck}.pdf`),
   };
 }
 
